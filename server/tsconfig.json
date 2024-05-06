@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",                       // Specifies the target ECMAScript version for emitted JavaScript.
+    "module": "commonjs",                     // Specifies the module code generation method. 'commonjs' for Node.js.
+    "strict": true,                           // Enable all strict type checking options.
+    "esModuleInterop": true,                  // Enable compatibility with CommonJS and ES6 modules.
+    "skipLibCheck": true,                     // Skip type checking of declaration files.
+    "forceConsistentCasingInFileNames": true, // Disallow inconsistently cased references to the same file.
+    "outDir": "./dist",                       // Output directory for compiled files.
+    "rootDir": "./src",                       // Specify the root directory of input files.
+    "sourceMap": true,                        // Generate source maps for debugging.
+    "moduleResolution": "node",               // Resolve module files the way Node.js does.
+    "allowSyntheticDefaultImports": true      // Allow default imports from modules with no default export.
+  },
+  "include": ["src/**/*.ts"],                 // Include all TypeScript files under the src directory.
+  "exclude": ["node_modules", "dist"]         // Exclude node_modules and the dist folder from compilation.
+}
