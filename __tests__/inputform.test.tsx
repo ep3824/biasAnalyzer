@@ -1,24 +1,43 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import '@testing-library/jest-dom'
 import InputForm from '../src/InputForm'
 
-test('loads and displays body of data from fetch', async () => {
-  // Mock fetch
+test('submits data and displays result', async () => {
+  const mockResponse = { message: 'Response from server' }
+
+  // Mock the fetch function to return the desired response
   global.fetch = jest.fn(() =>
     Promise.resolve({
-      json: () => Promise.resolve({ body: 'I am data body' }),
+      json: () => Promise.resolve(mockResponse),
     }),
   ) as jest.Mock
 
-  render(<InputForm url="/greeting" />)
+  render(<InputForm url="http://localhost:3000/api/analyze" />)
 
-  // Click the "Submit Input" button
-  await userEvent.click(screen.getByText('Submit Input'))
+  // Simulate entering text in the TextField
+  const articleTextField = screen.getByLabelText('article', { exact: false })
+  await userEvent.type(articleTextField, 'Test input')
 
-  expect(await screen.findByRole('heading')).toHaveTextContent('I am data body')
+  // Click the "Submit Input" button, wrapping in act
+  const submitButton = screen.getByRole('button', { name: /submit input/i })
+  await act(async () => {
+    await userEvent.click(submitButton)
+  })
 
-  // Ensure the button is enabled after fetching the data
-  expect(screen.getByRole('button')).toBeEnabled()
+  // Wait for the fetch to complete and the message to be updated
+  await waitFor(() => {
+    // Ensure fetch was called with the right parameters
+    expect(global.fetch).toHaveBeenCalledWith(
+      'http://localhost:3000/api/analyze',
+      expect.objectContaining({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: 'Test input' }),
+      }),
+    )
+
+    // Check that the message is displayed correctly
+    expect(screen.getByText(mockResponse.message)).toBeInTheDocument()
+  })
 })

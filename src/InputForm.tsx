@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { TextField, Button } from '@mui/material'
+import { TextField, Button, CircularProgress, Box } from '@mui/material'
 
 interface InputFormProps {
   url: string
@@ -10,21 +10,27 @@ const InputForm = ({ url }: InputFormProps) => {
   const [buttonDisabled, setButtonDisabled] = useState(false)
   const [articleText, setArticleText] = useState('')
 
-  interface ResponseData {
-    body: string
-  }
-
-  const submitInput = async () => {
+  const submitInput = async (e: React.FormEvent) => {
+    console.log('IS THS ON')
+    e.preventDefault()
     setButtonDisabled(true) // Disable the button during loading
     try {
-      const response = await fetch(url)
-      const data: ResponseData = await response.json()
-      console.log(data)
-      setMessageBody(data.body)
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: articleText,
+        }),
+      })
+      const data = await response.json()
+      setMessageBody(data.message || 'Default message')
     } catch (error) {
       console.error('Failed to submit input', error)
     } finally {
       setButtonDisabled(false)
+      setArticleText('')
     }
   }
 
@@ -36,6 +42,7 @@ const InputForm = ({ url }: InputFormProps) => {
           label="article"
           onChange={(e) => setArticleText(e.target.value)}
           required
+          multiline
           type="text"
           value={articleText}
         />
@@ -43,6 +50,11 @@ const InputForm = ({ url }: InputFormProps) => {
           Submit Input
         </Button>
       </form>
+      {buttonDisabled && (
+        <Box>
+          <CircularProgress />
+        </Box>
+      )}
       {messageBody && <h1>{messageBody}</h1>}
     </div>
   )

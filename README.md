@@ -31,3 +31,6 @@ export default {
 
 
 
+## Dev
+server: npx tsx src/index.ts
+client: npm run dev

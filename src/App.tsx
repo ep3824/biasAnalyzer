@@ -1,14 +1,11 @@
 import React from 'react'
-import { useState } from 'react'
 import './App.css'
 import InputForm from './InputForm'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <InputForm url={'https://jsonplaceholder.typicode.com/posts/1'} />
+      <InputForm url={'http://192.168.70.11:3000/api/analyze'} />
     </>
   )
 }
